@@ -98,14 +98,18 @@ def main() -> None:
     best_period = 2 * np.pi / freq_grid[np.argmax(power)]
 
     # Refine with a full Keplerian least-squares fit seeded at the LS period.
+    # Bounds are enforced directly on the optimizer's parameters (not just
+    # inside the model function), so the fitted eccentricity used later for
+    # the mass calculation can't land outside the physical range even if
+    # the optimizer's search path briefly considers points outside it.
     def model(t, period, t0, k, ecc, omega, gamma):
-        ecc = np.clip(ecc, 0, 0.9)
         return keplerian_rv(t, period, t0, k, ecc, omega, gamma)
 
     p0 = [best_period, time[np.argmax(rv)], (rv.max() - rv.min()) / 2, 0.05, 0.0, 0.0]
-    popt, pcov = curve_fit(model, time, rv, p0=p0, sigma=rv_err, maxfev=20000)
+    bounds_lo = [0.5, 0.0, 0.0, 0.0, -2 * np.pi, -50.0]
+    bounds_hi = [50.0, BASELINE_DAYS, 500.0, 0.9, 2 * np.pi, 50.0]
+    popt, pcov = curve_fit(model, time, rv, p0=p0, sigma=rv_err, bounds=(bounds_lo, bounds_hi), maxfev=20000)
     fit_period, fit_t0, fit_k, fit_ecc, fit_omega, fit_gamma = popt
-    fit_k = abs(fit_k)
     perr = np.sqrt(np.diag(pcov))
 
     mp_recovered = minimum_mass_mearth(fit_period, fit_k, fit_ecc, STAR_MASS_MSUN)
