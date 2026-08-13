@@ -3,4 +3,4 @@ period_days,4.23,4.2303 +/- 0.0002,0.01
 K_ms,92.0,92.00 +/- 0.34,0.01
 eccentricity,0.04,0.041,-
 Mp_sini_mearth,235.7,235.8,0.00
-n_observations,60,105,-
+n_observations,60,60,target vs. actual fitted sample size

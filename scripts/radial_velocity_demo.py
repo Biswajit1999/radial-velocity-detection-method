@@ -127,7 +127,7 @@ def main() -> None:
         writer.writerow(["K_ms", TRUE_K_MS, f"{fit_k:.2f} +/- {perr[2]:.2f}", f"{k_error_pct:.2f}"])
         writer.writerow(["eccentricity", TRUE_ECC, f"{fit_ecc:.3f}", "-"])
         writer.writerow(["Mp_sini_mearth", f"{mp_true:.1f}", f"{mp_recovered:.1f}", f"{mass_error_pct:.2f}"])
-        writer.writerow(["n_observations", N_OBS, in_season.sum(), "-"])
+        writer.writerow(["n_observations", N_OBS, len(time), "target vs. actual fitted sample size"])
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.4))
 
