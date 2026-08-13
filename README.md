@@ -104,7 +104,7 @@ pip install -r requirements.txt
 python scripts/radial_velocity_demo.py
 ```
 
-## Worked example with a real target
+## Sanity check against a real target's published parameters
 
 The K equation applies to the planet that started it all. 51 Pegasi
 b's real orbital parameters from a single self-consistent study
