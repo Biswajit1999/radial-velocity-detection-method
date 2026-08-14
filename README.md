@@ -104,6 +104,19 @@ pip install -r requirements.txt
 python scripts/radial_velocity_demo.py
 ```
 
+## Tests
+
+`tests/test_radial_velocity.py` checks the Kepler solver residual, the
+circular-orbit limit, a mass/K round trip, and — as a regression guard
+— that minimum mass scales as Mstar^(2/3) at fixed K, not the
+Mstar^(1/2) scaling an earlier version of this README incorrectly
+stated. Runs automatically on every push via GitHub Actions; run
+locally with:
+
+```bash
+pytest tests/ -v
+```
+
 ## Sanity check against a real target's published parameters
 
 The K equation applies to the planet that started it all. 51 Pegasi
