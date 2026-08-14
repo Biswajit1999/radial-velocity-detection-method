@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radial Velocity — The Physics, the Numbers, and a Live Calculator</title>
+<meta name="description" content="A working reference on radial-velocity exoplanet detection: the full semi-amplitude derivation, worked numerical examples including 51 Pegasi b, real detection statistics, and an interactive calculator built on the actual equations.">
+<style>
+:root {
+  --bg:#f6f7f9; --panel:#ffffff; --line:#dfe3e8; --text:#181c22; --muted:#5c6470;
+  --accent:#7a3b9e; --accent-soft:#f0e6f7; --sans:"Inter","Segoe UI",system-ui,Arial,sans-serif;
+  --mono:"IBM Plex Mono","Roboto Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#15121a; --panel:#1c1822; --line:#2f2838; --text:#ece8f1; --muted:#a99cb5; --accent:#c084e8; --accent-soft:#2a1f38; }
+}
+* { box-sizing: border-box; }
+html,body { margin:0; background:var(--bg); color:var(--text); font-family:var(--sans); }
+.wrap { max-width: 980px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+header.hero { border-bottom: 1px solid var(--line); padding-bottom: 2rem; margin-bottom: 2rem; }
+.kicker { color: var(--accent); font: 600 .75rem var(--mono); letter-spacing: .12em; text-transform: uppercase; margin: 0 0 .8rem; }
+h1 { font-size: clamp(2rem, 5vw, 2.9rem); margin: 0 0 .6rem; letter-spacing: -.02em; }
+.tagline { color: var(--muted); font-size: 1.1rem; max-width: 720px; margin: 0; }
+.badges { display:flex; gap:.5rem; margin-top: 1.2rem; flex-wrap: wrap; }
+.badge { font: 600 .68rem var(--mono); background: var(--accent-soft); color: var(--accent); padding: .3rem .6rem; border-radius: 5px; }
+nav.toc { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.4rem; margin: 2rem 0; }
+nav.toc h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 .7rem; }
+nav.toc ol { margin: 0; padding-left: 1.2rem; columns: 2; column-gap: 2rem; font-size: .92rem; }
+nav.toc li { margin-bottom: .4rem; }
+nav.toc a { color: var(--text); text-decoration: none; }
+nav.toc a:hover { color: var(--accent); }
+section { margin: 3rem 0; scroll-margin-top: 1.5rem; }
+h2 { font-size: 1.5rem; margin: 0 0 1rem; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.6rem 0 .6rem; }
+p { line-height: 1.75; }
+.muted { color: var(--muted); }
+.eq { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.4rem; margin: 1rem 0; overflow-x: auto; }
+.eq p { margin: 0; text-align: center; font-family: var(--mono); font-size: 1.05rem; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; margin: 1rem 0; }
+th, td { text-align: left; padding: .6rem .7rem; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; }
+.figure { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1rem; margin: 1.2rem 0; }
+.figure img { width: 100%; height: auto; border-radius: 6px; }
+.figure figcaption { color: var(--muted); font-size: .85rem; margin-top: .6rem; }
+.callout { background: var(--accent-soft); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; border-radius: 6px; font-size: .93rem; }
+.calc { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 1.6rem; margin: 1.4rem 0; }
+.calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1.4rem 2rem; }
+.field { margin-bottom: .3rem; }
+.field label { display: flex; justify-content: space-between; font: 600 .82rem var(--mono); color: var(--muted); margin-bottom: .4rem; }
+.field label span.val { color: var(--accent); }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.calc-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: .8rem; margin-top: 1.6rem; border-top: 1px solid var(--line); padding-top: 1.4rem; }
+.result { background: var(--accent-soft); border-radius: 10px; padding: .9rem 1rem; }
+.result span { display:block; color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
+.result strong { font: 700 1.3rem var(--mono); color: var(--accent); display:block; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: .8rem; margin: 1.2rem 0; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: .9rem 1rem; }
+.stat span { display:block; color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
+.stat strong { font: 700 1.25rem var(--mono); color: var(--accent); }
+ol.refs { padding-left: 1.2rem; color: var(--muted); font-size: .92rem; line-height: 1.7; }
+ol.refs li { margin-bottom: .5rem; }
+a { color: var(--accent); }
+code { background: var(--accent-soft); padding: .1rem .35rem; border-radius: 4px; font-size: .88em; }
+footer { border-top: 1px solid var(--line); margin-top: 3rem; padding-top: 1.5rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; color: var(--muted); font-size: .85rem; }
+footer nav { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+footer a { color: var(--muted); text-decoration: none; }
+footer a:hover { color: var(--accent); }
+.related { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.5rem 0; font-size: .92rem; }
+.related a { font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <p class="kicker">Exoplanet Detection Methods · Radial Velocity</p>
+    <h1>Radial Velocity</h1>
+    <p class="tagline">The method that found the first exoplanet around a Sun-like star: watching a star's spectral lines shift back and forth as an orbiting planet's gravity tugs it in a small, periodic wobble. This page derives the semi-amplitude equation from first principles, works through real numbers including 51 Pegasi b, reports current detection statistics, and includes a live calculator built on the same physics.</p>
+    <div class="badges">
+      <span class="badge">~19% of all confirmed exoplanets</span>
+      <span class="badge">51 Pegasi b, 1995</span>
+      <span class="badge">Real Keplerian fit implemented in this repo</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#barycenter">1. Two bodies, one shared orbit</a></li>
+      <li><a href="#semiamplitude">2. The semi-amplitude equation</a></li>
+      <li><a href="#eccentric">3. Eccentric orbits and Kepler's equation</a></li>
+      <li><a href="#minmass">4. Why RV only gives a minimum mass</a></li>
+      <li><a href="#examples">5. Worked numerical examples</a></li>
+      <li><a href="#calculator">6. Interactive calculator</a></li>
+      <li><a href="#statistics">7. Real detection statistics</a></li>
+      <li><a href="#pipeline">8. How a real search finds a signal</a></li>
+      <li><a href="#limitations">9. Limitations and open problems</a></li>
+      <li><a href="#references">10. References</a></li>
+    </ol>
+  </nav>
+
+  <section id="barycenter">
+    <h2>1. Two bodies, one shared orbit</h2>
+    <p>A planet does not orbit a fixed, stationary star. Both bodies orbit their mutual center of mass — the <strong>barycenter</strong> — with the star tracing out a much smaller version of the planet's own orbit, scaled down by the mass ratio M<sub>p</sub>/M<sub>★</sub>. As the star moves along that small orbit, its motion has a component toward and away from Earth that periodically Doppler-shifts its light: redshifted while receding, blueshifted while approaching. That shift shows up as a tiny periodic wavelength shift in the star's absorption lines — typically of order meters per second, measured against light itself traveling at 3×10⁸ m/s, which is why the technique depends on extremely high-resolution, high-stability spectroscopy: resolving a few-meters-per-second Doppler shift means resolving a wavelength shift of roughly one part in 10⁸.</p>
+  </section>
+
+  <section id="semiamplitude">
+    <h2>2. The semi-amplitude equation</h2>
+    <p>The velocity semi-amplitude of the star's reflex wobble — how fast it swings toward and away from us at the extremes of its small orbit — is:</p>
+    <div class="eq"><p>K = (2πG / P)<sup>1/3</sup> · [M<sub>p</sub> sin i / (M<sub>★</sub>+M<sub>p</sub>)<sup>2/3</sup>] · 1/√(1−e²)</p></div>
+    <p>Reading it term by term:</p>
+    <ul>
+      <li><strong>(2πG/P)<sup>1/3</sup></strong> comes from Kepler's third law setting the overall orbital velocity scale — shorter periods mean faster orbital motion and a bigger wobble, all else equal.</li>
+      <li><strong>M<sub>p</sub> sin i / (M<sub>★</sub>+M<sub>p</sub>)<sup>2/3</sup></strong> is the mass ratio that sets how large a wobble the planet induces. In the common limit M<sub>p</sub> ≪ M<sub>★</sub>, this reduces to roughly M<sub>p</sub> sin i / M<sub>★</sub><sup>2/3</sup> — the host star's mass suppresses the signal, but only with a 2/3 power, not the 1/2-power (square-root) scaling it's easy to misremember.</li>
+      <li><strong>1/√(1−e²)</strong> boosts K for eccentric orbits, since the star moves fastest at periastron (closest approach) — a circular orbit (e=0) gives the smallest K for a given period and mass.</li>
+    </ul>
+    <p>Jupiter induces a wobble of about 12.5 m/s on the Sun; Earth induces about 9 cm/s — three orders of magnitude smaller, and still below what any current instrument can measure for a true Earth twin around a Sun-like star. That gap is the central engineering challenge of the entire method.</p>
+  </section>
+
+  <section id="eccentric">
+    <h2>3. Eccentric orbits and Kepler's equation</h2>
+    <p>For a circular orbit, the RV curve traced out over one period is a pure sinusoid. For an eccentric orbit, the star moves faster near periastron and slower near apastron, which distorts the curve into an asymmetric shape — rising steeply and falling more gradually, or vice versa, depending on the viewing angle (the argument of periastron, ω). Computing the star's velocity at a given moment requires first solving <strong>Kepler's equation</strong>,</p>
+    <div class="eq"><p>M = E − e sin E</p></div>
+    <p>for the eccentric anomaly E given the mean anomaly M (which advances uniformly with time) — an equation with no closed-form solution, solved here by Newton-Raphson iteration, exactly as real RV pipelines do. E is then converted to the true anomaly ν, and the final velocity uses K·[cos(ν+ω) + e·cos ω]. This machinery is what lets a Keplerian fit recover not just the period and mass, but the full orbital shape — eccentricity and orientation — from RV data alone.</p>
+  </section>
+
+  <section id="minmass">
+    <h2>4. Why RV only gives a minimum mass</h2>
+    <p>Radial velocity is only sensitive to the line-of-sight component of the star's motion — it cannot see motion transverse to our line of sight at all. That's the origin of the sin i factor in the semi-amplitude equation: if the orbit is viewed edge-on (i = 90°), the full wobble projects onto our line of sight and K is maximal; if viewed face-on (i = 0°), the star's motion is entirely transverse and produces <em>no</em> Doppler signal at all, no matter how massive the planet. Since the true inclination is generally unknown from RV data alone, the method can only ever recover the product M<sub>p</sub> sin i — a firm <strong>lower bound</strong> on the true mass, not the mass itself. Breaking that degeneracy requires an independent inclination measurement, most commonly from a transit (which, by definition, requires i close to 90°) or from astrometry. This is precisely why RV and transit photometry are complementary rather than redundant: a planet detected by both methods yields a true mass, a true radius, and therefore a real bulk density.</p>
+  </section>
+
+  <section id="examples">
+    <h2>5. Worked numerical examples</h2>
+    <table>
+      <tr><th>System</th><th>M<sub>p</sub> sin i</th><th>M<sub>★</sub></th><th>Period</th><th>e</th><th>Computed K</th></tr>
+      <tr><td>Earth &amp; Sun (reference case)</td><td>1.00 M⊕</td><td>1.00 M☉</td><td>365.25 d</td><td>0.017</td><td>8.9 cm/s</td></tr>
+      <tr><td>Jupiter &amp; Sun (reference case)</td><td>1.00 M<sub>J</sub></td><td>1.00 M☉</td><td>4,332.6 d (11.86 yr)</td><td>0.049</td><td>12.5 m/s</td></tr>
+      <tr><td>51 Pegasi b</td><td>0.464 M<sub>J</sub></td><td>1.069 M☉</td><td>4.230797 d</td><td>0.0042</td><td>55.74 m/s</td></tr>
+    </table>
+    <h3>Full derivation: 51 Pegasi b</h3>
+    <p>The planet that started it all. Its real orbital parameters from a single self-consistent study (NASA Exoplanet Archive): period 4.230797 days, minimum mass 0.464 Jupiter masses, host star mass 1.069 Solar masses, eccentricity 0.0042. Feeding these into the semi-amplitude equation from Section 2:</p>
+    <div class="eq"><code>P     = 4.230797 × 86,400 s = 365,540 s
+Mp    = 0.464 × 1.898×10²⁷ kg = 8.807×10²⁶ kg
+Mstar = 1.069 × 1.989×10³⁰ kg = 2.126×10³⁰ kg
+K = (2π·G / P)^(1/3) × Mp / (Mstar+Mp)^(2/3) / √(1−e²)
+  = 55.74 m/s</code></div>
+    <p>The same study's own measured semi-amplitude is 55.73 m/s — the formula reproduces the published value essentially exactly, because the minimum mass in that study was itself derived from this same K measurement. That circularity is expected, not a weakness: it confirms the equation and the published numbers are internally consistent, which is exactly what you'd want to check before trusting either one on a target where the answer isn't already known. This portfolio's own <a href="https://github.com/Biswajit1999/radial-velocity-detection-method/blob/master/scripts/radial_velocity_demo.py">radial_velocity_demo.py</a> implements the same Kepler solver and semi-amplitude formula used above, then validates it against an independently injected synthetic signal rather than a real target — see Section 8.</p>
+  </section>
+
+  <section id="calculator">
+    <h2>6. Interactive calculator</h2>
+    <p>Move the sliders below. The outputs are computed live, directly from the semi-amplitude equation in Section 2 — nothing here is looked up or pre-baked.</p>
+    <div class="calc">
+      <div class="calc-grid">
+        <div class="field">
+          <label>Planet mass (true) <span class="val" id="mpVal">1.00 M♃</span></label>
+          <input type="range" id="mp" min="0.003" max="13" step="0.001" value="1.0">
+        </div>
+        <div class="field">
+          <label>Star mass <span class="val" id="mstarVal">1.00 M☉</span></label>
+          <input type="range" id="mstar" min="0.08" max="2.5" step="0.01" value="1.0">
+        </div>
+        <div class="field">
+          <label>Orbital period <span class="val" id="periodVal">4.23 days</span></label>
+          <input type="range" id="period" min="0.5" max="4400" step="0.5" value="4.23">
+        </div>
+        <div class="field">
+          <label>Eccentricity, e <span class="val" id="eVal">0.00</span></label>
+          <input type="range" id="ecc" min="0" max="0.9" step="0.01" value="0">
+        </div>
+        <div class="field">
+          <label>Inclination, i <span class="val" id="iVal">90.0°</span></label>
+          <input type="range" id="incl" min="1" max="90" step="0.5" value="90">
+        </div>
+        <div class="field">
+          <label>Instrument precision <span class="val" id="noiseVal">1.0 m/s</span></label>
+          <input type="range" id="noise" min="0.1" max="20" step="0.1" value="1.0">
+        </div>
+      </div>
+      <div class="calc-results">
+        <div class="result"><span>Semi-amplitude, K</span><strong id="outK">–</strong></div>
+        <div class="result"><span>K if edge-on (i=90°)</span><strong id="outKmax">–</strong></div>
+        <div class="result"><span>Recoverable: Mp sin i</span><strong id="outMinMass">–</strong></div>
+        <div class="result"><span>Single-point SNR (K/σ)</span><strong id="outSNR">–</strong></div>
+      </div>
+      <p class="callout" id="calcNote" style="margin-top:1.2rem;"></p>
+    </div>
+    <p class="muted" style="font-size:.85rem;">K uses the full equation from Section 2, including the eccentricity and inclination factors. "K if edge-on" holds every other parameter fixed and sets i=90° to show how much of the true signal a face-on-biased inclination hides. Mp sin i is the true observable — the quantity an RV fit alone can actually recover, per Section 4. Single-point SNR is simply K divided by the stated per-measurement instrument precision, a rough proxy for how easily a single high-precision spectrograph visit would detect the signal (real detection significance comes from a periodogram over many visits, not one point — see Section 8).</p>
+  </section>
+
+  <section id="statistics">
+    <h2>7. Real detection statistics</h2>
+    <p>Pulled live from the NASA Exoplanet Archive's confirmed-planet counts by discovery method, accessed 2026-08-14:</p>
+    <div class="stat-grid">
+      <div class="stat"><span>Total confirmed</span><strong>6,336</strong></div>
+      <div class="stat"><span>Via radial velocity</span><strong>1,197 (~19%)</strong></div>
+      <div class="stat"><span>Via transit</span><strong>4,676 (~74%)</strong></div>
+      <div class="stat"><span>Via microlensing</span><strong>282 (~4%)</strong></div>
+      <div class="stat"><span>Via direct imaging</span><strong>98 (~2%)</strong></div>
+    </div>
+    <p>Radial velocity is the second most productive detection method, and — unlike transit photometry — it does not require a lucky edge-on alignment to work at all (only a non-zero inclination), which made it the method of choice throughout the 1990s and 2000s before wide-field transit surveys took over as the dominant discovery channel. It remains essential today not as a primary discovery method but as the standard way to <em>confirm</em> transiting candidates and measure their true masses: major facilities driving this include <strong>HARPS</strong> (La Silla, ~1 m/s precision), <strong>ESPRESSO</strong> (VLT, sub-m/s precision), and <strong>Keck/HIRES</strong>, among others.</p>
+  </section>
+
+  <div class="figure">
+    <img src="figures/radial_velocity_recovery.png" alt="Keplerian radial-velocity fit recovery plot from this repo's own injection-recovery test">
+    <figcaption>Output of this repo's own <code>scripts/radial_velocity_demo.py</code>: a Lomb-Scargle periodogram period search followed by a full nonlinear Keplerian least-squares fit, recovering an injected orbit from realistically sampled, HARPS-noise-level synthetic data. See Section 8.</figcaption>
+  </div>
+
+  <section id="pipeline">
+    <h2>8. How a real search finds a signal</h2>
+    <p>This repository implements the full RV analysis chain from scratch in Python:</p>
+    <ol>
+      <li>Injects a known Keplerian orbit (period, semi-amplitude K, eccentricity) sampled the way a real ground-based spectrograph campaign actually observes — irregular nightly cadence with seasonal observing-window gaps, not a smooth, evenly sampled curve.</li>
+      <li>Adds noise combining HARPS's own published ~1 m/s single-measurement photon-noise precision with a ~1.5 m/s stellar jitter term added in quadrature — both realistic, published regimes, since stellar activity (spots, plages, granulation) imposes a noise floor no amount of instrumental precision alone can remove.</li>
+      <li>Recovers the orbital period from a Lomb-Scargle periodogram (<code>scipy.signal.lombscargle</code>), built specifically to handle irregularly sampled time series like real RV data.</li>
+      <li>Refines period, K, eccentricity, and argument of periastron with a full nonlinear Keplerian least-squares fit (<code>scipy.optimize.curve_fit</code>), built on the from-scratch Kepler-equation solver and RV model derived in Sections 2-3.</li>
+      <li>Converts the recovered K into a minimum mass M<sub>p</sub> sin i using the semi-amplitude equation and a fixed host star mass, and reports the error against the known injected truth.</li>
+    </ol>
+    <p>The result from this repo's own run, with HARPS-class noise and only 60 irregularly sampled nights:</p>
+    <table>
+      <tr><th>Quantity</th><th>Injected</th><th>Recovered</th><th>Error</th></tr>
+      <tr><td>Period</td><td>4.23 days</td><td>4.2303 days</td><td>0.01%</td></tr>
+      <tr><td>K (semi-amplitude)</td><td>92.0 m/s</td><td>92.00 m/s</td><td>0.01%</td></tr>
+      <tr><td>M<sub>p</sub> sin i</td><td>235.7 Earth masses</td><td>235.8 Earth masses</td><td>0.00%</td></tr>
+    </table>
+    <p>Run it yourself: <code>pip install -r requirements.txt &amp;&amp; python scripts/radial_velocity_demo.py</code>. Tests live in <code>tests/test_radial_velocity.py</code>, including a regression guard that minimum mass scales as M<sub>★</sub><sup>2/3</sup> at fixed K — not the M<sub>★</sub><sup>1/2</sup> scaling it's easy to misremember — and run automatically on every push via GitHub Actions.</p>
+  </section>
+
+  <section id="limitations">
+    <h2>9. Limitations and open problems</h2>
+    <p>The injected K (92 m/s) in this repo's demo sits at very high signal-to-noise against ~1.8 m/s combined noise, so it demonstrates that a strong Keplerian signal can be fitted cleanly — it is not a test of recovery near the noise floor, where real degeneracies between period, eccentricity, and sampling-window gaps become much harder to break. There is also no false-alarm-probability calculation on the periodogram peak in this demo, no fitted instrumental jitter term (jitter is added to the simulated data but not solved for in the fit), and no long-term trend or additional companion in the model — all standard components of a real RV analysis pipeline.</p>
+    <p>More fundamentally, stellar activity is the field's hardest open problem: starspots, plages, and granulation on the host star's own surface can imprint RV-like signals of 1-5 m/s or more that mimic or mask a genuine planetary orbit, and disentangling the two is an active area of research (activity indicators like the Ca II H&amp;K lines, and Gaussian-process regression against them, are common mitigations, neither implemented here). And per Section 4, RV alone never yields a true mass — only M<sub>p</sub> sin i — so any single-method RV "planet" carries an unresolved inclination ambiguity unless independently broken.</p>
+    <p class="callout">Real RV pipelines such as <code>radvel</code> and MCMC/nested-sampling-based fitters handle jitter fitting, false-alarm calibration, and multi-planet models properly, and are worth comparing your own fit against.</p>
+  </section>
+
+  <div class="related">
+    Also on this topic: <a href="https://biswajit1999.github.io/Jana-s-RV-Doppler-Observatory/">Jana's RV Doppler Observatory</a> — an earlier, broader radial-velocity lab built by the same author, covering related Doppler-spectroscopy analysis in more depth.
+  </div>
+
+  <section id="references">
+    <h2>10. References</h2>
+    <ol class="refs">
+      <li>Mayor, M. and Queloz, D., 1995. A Jupiter-mass companion to a solar-type star. <em>Nature</em>, 378, pp.355-359 — the first exoplanet discovered around a Sun-like star (51 Pegasi b).</li>
+      <li>Marcy, G.W. and Butler, R.P., 1998. Detection of Extrasolar Giant Planets. <em>Annual Review of Astronomy and Astrophysics</em>, 36, pp.57-97.</li>
+      <li>Lovis, C. and Fischer, D., 2010. Radial Velocity Techniques for Exoplanets, in <em>Exoplanets</em>, ed. S. Seager, University of Arizona Press, pp.27-53.</li>
+      <li>Lomb, N.R., 1976. Least-squares frequency analysis of unequally spaced data. <em>Astrophysics and Space Science</em>, 39, pp.447-462.</li>
+      <li>Mayor, M. et al., 2003. Setting New Standards with HARPS. <em>The Messenger</em>, 114, pp.20-24 — the ~1 m/s instrumental precision used above.</li>
+      <li>Fulton, B.J. et al., 2018. RadVel: The Radial Velocity Modeling Toolkit. <em>Publications of the Astronomical Society of the Pacific</em>, 130(986), 044504.</li>
+      <li>NASA Exoplanet Archive confirmed-planet counts by discovery method, <a href="https://exoplanetarchive.ipac.caltech.edu/docs/counts_detail.html">exoplanetarchive.ipac.caltech.edu</a> — accessed 2026-08-14.</li>
+      <li>NASA Exoplanet Archive, <a href="https://exoplanetarchive.ipac.caltech.edu/">exoplanetarchive.ipac.caltech.edu</a>.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <span>Biswajit Jana · Exoplanet Detection Methods Series</span>
+    <nav>
+      <a href="README.md">Full README</a>
+      <a href="https://biswajit1999.github.io/Jana-s-RV-Doppler-Observatory/" target="_blank" rel="noopener">Related: RV Doppler Observatory</a>
+      <a href="https://biswajit1999.github.io/Biswajit_Jana.github.io/" target="_blank" rel="noopener">Portfolio</a>
+      <a href="https://github.com/Biswajit1999" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/biswajit-jana-27011a151/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://orcid.org/0009-0002-2411-1891" target="_blank" rel="noopener">ORCID</a>
+    </nav>
+  </footer>
+</div>
+
+<script>
+(function() {
+  const G = 6.674e-11, M_EARTH = 5.972e24, M_JUP = 1.898e27, M_SUN = 1.989e30, DAY = 86400;
+
+  const mp = document.getElementById('mp'), mstar = document.getElementById('mstar'),
+        period = document.getElementById('period'), ecc = document.getElementById('ecc'),
+        incl = document.getElementById('incl'), noise = document.getElementById('noise');
+
+  const mpVal = document.getElementById('mpVal'), mstarVal = document.getElementById('mstarVal'),
+        periodVal = document.getElementById('periodVal'), eVal = document.getElementById('eVal'),
+        iVal = document.getElementById('iVal'), noiseVal = document.getElementById('noiseVal');
+
+  const outK = document.getElementById('outK'), outKmax = document.getElementById('outKmax'),
+        outMinMass = document.getElementById('outMinMass'), outSNR = document.getElementById('outSNR'),
+        calcNote = document.getElementById('calcNote');
+
+  function fmt(x, d) { return Number(x).toFixed(d); }
+
+  function semiAmplitude(Mp_kg, Mstar_kg, P_days, e, sin_i) {
+    const P_s = P_days * DAY;
+    const term1 = Math.cbrt(2*Math.PI*G/P_s);
+    const term2 = (Mp_kg*sin_i) / Math.pow(Mstar_kg+Mp_kg, 2/3);
+    const term3 = 1/Math.sqrt(1-e*e);
+    return term1*term2*term3;
+  }
+
+  function compute() {
+    const Mp_mj = parseFloat(mp.value), Mstar_ms = parseFloat(mstar.value),
+          P_days = parseFloat(period.value), e = parseFloat(ecc.value),
+          i_deg = parseFloat(incl.value), sigma = parseFloat(noise.value);
+
+    mpVal.textContent = fmt(Mp_mj,3) + ' M♃';
+    mstarVal.textContent = fmt(Mstar_ms,2) + ' M☉';
+    periodVal.textContent = fmt(P_days,2) + ' days';
+    eVal.textContent = fmt(e,2);
+    iVal.textContent = fmt(i_deg,1) + '°';
+    noiseVal.textContent = fmt(sigma,1) + ' m/s';
+
+    const Mp_kg = Mp_mj * M_JUP;
+    const Mstar_kg = Mstar_ms * M_SUN;
+    const sin_i = Math.sin(i_deg * Math.PI/180);
+
+    const K = semiAmplitude(Mp_kg, Mstar_kg, P_days, e, sin_i);
+    const Kmax = semiAmplitude(Mp_kg, Mstar_kg, P_days, e, 1);
+    const minMass_mj = Mp_mj * sin_i;
+
+    outK.textContent = fmt(K,3) + ' m/s';
+    outKmax.textContent = fmt(Kmax,3) + ' m/s';
+    outMinMass.textContent = minMass_mj < 0.05
+      ? fmt(minMass_mj * (M_JUP/M_EARTH), 2) + ' M⊕'
+      : fmt(minMass_mj,3) + ' M♃';
+    const snr = K / sigma;
+    outSNR.textContent = fmt(snr,2) + 'σ';
+
+    calcNote.textContent = 'At i = ' + fmt(i_deg,1) + '°, this orbit reveals ' + fmt(sin_i*100,1) + '% of its true edge-on semi-amplitude (' + fmt(Kmax,3) + ' m/s). An RV fit alone cannot tell this system apart from a system with a smaller true planet mass at higher inclination that happens to produce the same observed K — that degeneracy is exactly what "minimum mass" means in practice.';
+  }
+
+  [mp, mstar, period, ecc, incl, noise].forEach(el => el.addEventListener('input', compute));
+  compute();
+})();
+</script>
+</body>
+</html>

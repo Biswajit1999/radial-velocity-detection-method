@@ -8,6 +8,14 @@ from scratch, fits it to a simulated dataset with SciPy's nonlinear
 least squares and Lomb-Scargle periodogram, and validates the whole
 pipeline by injecting a known signal and recovering it.
 
+**[Open the full interactive report](index.html)** — the same physics
+below, plus worked numerical examples (including a full 51 Pegasi b
+derivation), real detection statistics, and a live calculator built on
+the actual semi-amplitude equation (open locally in a browser, or serve
+with `python -m http.server` from this directory).
+
+Related, from the same author: [Jana's RV Doppler Observatory](https://biswajit1999.github.io/Jana-s-RV-Doppler-Observatory/), an earlier radial-velocity lab covering related Doppler-spectroscopy analysis.
+
 ## The physics
 
 ### Two bodies orbiting their common center of mass
@@ -64,6 +72,14 @@ it works regardless of orbital inclination (as long as it's not
 perfectly face-on) and directly constrains mass rather than radius,
 making it the essential complement to transit surveys for measuring
 real planet densities and bulk compositions.
+
+Per the NASA Exoplanet Archive's confirmed-planet counts by discovery
+method (accessed 2026-08-14), radial velocity accounts for 1,197 of
+6,336 confirmed exoplanets (~19%) — the second most productive method
+after transit photometry (4,676, ~74%), ahead of microlensing (282,
+~4%) and direct imaging (98, ~2%). Major facilities driving this
+include HARPS (La Silla, ~1 m/s precision), ESPRESSO (VLT, sub-m/s
+precision), and Keck/HIRES.
 
 **Limitation:** the induced wobble scales as roughly
 $M_p \sin i / M_\star^{2/3}$ (see the equation above — not a simpler
