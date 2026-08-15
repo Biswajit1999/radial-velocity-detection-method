@@ -1,5 +1,9 @@
 # Radial Velocity — Exoplanet Detection Method
 
+<img src="images/hero.png" alt="Artist's concept of a star wobbling due to an orbiting planet" width="360">
+
+*AI-generated artist's concept — not a real photograph. See the report for actual RV spectroscopy data.*
+
 The method that found the first exoplanet around a Sun-like star: watch
 a star's spectral lines shift back and forth as an orbiting planet's
 gravity tugs it in a small, periodic wobble. This repo works through
