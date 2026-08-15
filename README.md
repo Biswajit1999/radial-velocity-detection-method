@@ -1,8 +1,10 @@
 # Radial Velocity — Exoplanet Detection Method
 
-<img src="images/hero.png" alt="Artist's concept of a star wobbling due to an orbiting planet" width="360">
+<p align="center">
+  <img src="images/hero.png" alt="Artist's concept of a star wobbling due to an orbiting planet" width="360">
+</p>
 
-*AI-generated artist's concept — not a real photograph. See the report for actual RV spectroscopy data.*
+<p align="center"><em>AI-generated artist's concept — not a real photograph. See the report for actual RV spectroscopy data.</em></p>
 
 The method that found the first exoplanet around a Sun-like star: watch
 a star's spectral lines shift back and forth as an orbiting planet's
@@ -12,11 +14,7 @@ from scratch, fits it to a simulated dataset with SciPy's nonlinear
 least squares and Lomb-Scargle periodogram, and validates the whole
 pipeline by injecting a known signal and recovering it.
 
-**[Open the full interactive report](index.html)** — the same physics
-below, plus worked numerical examples (including a full 51 Pegasi b
-derivation), real detection statistics, and a live calculator built on
-the actual semi-amplitude equation (open locally in a browser, or serve
-with `python -m http.server` from this directory).
+**[Open the full report](https://biswajit1999.github.io/radial-velocity-detection-method/)** — the live GitHub Pages version. You can also open `index.html` locally in a browser, or serve it with `python -m http.server` from this directory.
 
 Related, from the same author: [Jana's RV Doppler Observatory](https://biswajit1999.github.io/Jana-s-RV-Doppler-Observatory/), an earlier radial-velocity lab covering related Doppler-spectroscopy analysis.
 
