@@ -129,7 +129,7 @@ p { line-height: 1.75; }
 .muted { color: var(--muted); }
 .eq { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.4rem; margin: 1rem 0; overflow-x: auto; }
 .eq p { margin: 0; text-align: center; font-family: var(--mono); font-size: 1.05rem; }
-table { width: 100%; border-collapse: collapse; font-size: .92rem; margin: 1rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; margin: 1rem 0; overflow-x: auto; display: block; }
 th, td { text-align: left; padding: .6rem .7rem; border-bottom: 1px solid var(--line); }
 th { color: var(--muted); font-weight: 600; }
 .figure { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1rem; margin: 1.2rem 0; }
@@ -153,6 +153,7 @@ th { color: var(--muted); font-weight: 600; }
 ol.refs { padding-left: 1.2rem; color: var(--muted); font-size: .92rem; line-height: 1.7; }
 ol.refs li { margin-bottom: .5rem; }
 a { color: var(--accent); }
+a:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 code { background: var(--accent-soft); padding: .1rem .35rem; border-radius: 4px; font-size: .88em; }
 footer { border-top: 1px solid var(--line); margin-top: 3rem; padding-top: 1.5rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; color: var(--muted); font-size: .85rem; }
 footer nav { display: flex; gap: 1.2rem; flex-wrap: wrap; }
@@ -173,6 +174,11 @@ header.hero > * { position: relative; z-index: 1; }
 .stat:hover, .result:hover, .figure:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(0,0,0,.14); }
 .result strong.pulse { animation: pulse-glow .4s ease; }
 @keyframes pulse-glow { 0% { text-shadow: 0 0 0 transparent; } 45% { text-shadow: 0 0 14px var(--accent); } 100% { text-shadow: 0 0 0 transparent; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .fade-in, .stat, .result, .figure { transition: none; transform: none; }
+  .result strong.pulse { animation: none; }
+}
 </style>
 </head>
 <body>
@@ -191,7 +197,7 @@ header.hero > * { position: relative; z-index: 1; }
   <div class="hero-banner">
     <img src="images/hero.png" alt="Artist's concept of a star wobbling due to an orbiting planet's gravity">
   </div>
-  <p class="ai-credit">AI-generated artist's concept of a star's Doppler wobble — not a real photograph. All data and figures on this page come from actual spectroscopic RV observations (see below).</p>
+  <p class="ai-credit">AI-generated artist's concept of a star's Doppler wobble — not a real photograph. The quantitative figure is generated from the explicitly declared synthetic injection; published target parameters and population counts are identified separately.</p>
 
   <nav class="toc">
     <h2>Contents</h2>
@@ -203,7 +209,7 @@ header.hero > * { position: relative; z-index: 1; }
       <li><a href="#examples">5. Worked numerical examples</a></li>
       <li><a href="#calculator">6. Interactive calculator</a></li>
       <li><a href="#statistics">7. Real detection statistics</a></li>
-      <li><a href="#pipeline">8. How a real search finds a signal</a></li>
+      <li><a href="#pipeline">8. Reproducible injection–recovery experiment</a></li>
       <li><a href="#limitations">9. Limitations and open problems</a></li>
       <li><a href="#references">10. References</a></li>
     </ol>
@@ -267,27 +273,27 @@ K = (2π·G / P)^(1/3) × Mp / (Mstar+Mp)^(2/3) / √(1−e²)
     <div class="calc">
       <div class="calc-grid">
         <div class="field">
-          <label>Planet mass (true) <span class="val" id="mpVal">1.00 M♃</span></label>
+          <label for="mp">Planet mass (true) <span class="val" id="mpVal">1.00 M♃</span></label>
           <input type="range" id="mp" min="0.003" max="13" step="0.001" value="1.0">
         </div>
         <div class="field">
-          <label>Star mass <span class="val" id="mstarVal">1.00 M☉</span></label>
+          <label for="mstar">Star mass <span class="val" id="mstarVal">1.00 M☉</span></label>
           <input type="range" id="mstar" min="0.08" max="2.5" step="0.01" value="1.0">
         </div>
         <div class="field">
-          <label>Orbital period <span class="val" id="periodVal">4.23 days</span></label>
+          <label for="period">Orbital period <span class="val" id="periodVal">4.23 days</span></label>
           <input type="range" id="period" min="0.5" max="4400" step="0.5" value="4.23">
         </div>
         <div class="field">
-          <label>Eccentricity, e <span class="val" id="eVal">0.00</span></label>
+          <label for="ecc">Eccentricity, e <span class="val" id="eVal">0.00</span></label>
           <input type="range" id="ecc" min="0" max="0.9" step="0.01" value="0">
         </div>
         <div class="field">
-          <label>Inclination, i <span class="val" id="iVal">90.0°</span></label>
+          <label for="incl">Inclination, i <span class="val" id="iVal">90.0°</span></label>
           <input type="range" id="incl" min="1" max="90" step="0.5" value="90">
         </div>
         <div class="field">
-          <label>Instrument precision <span class="val" id="noiseVal">1.0 m/s</span></label>
+          <label for="noise">Instrument precision <span class="val" id="noiseVal">1.0 m/s</span></label>
           <input type="range" id="noise" min="0.1" max="20" step="0.1" value="1.0">
         </div>
       </div>
@@ -321,17 +327,19 @@ K = (2π·G / P)^(1/3) × Mp / (Mstar+Mp)^(2/3) / √(1−e²)
 
   <div class="figure">
     <img src="figures/radial_velocity_recovery.png" alt="Keplerian radial-velocity fit recovery plot from this repo's own injection-recovery test">
-    <figcaption>Output of this repo's own <code>scripts/radial_velocity_demo.py</code>: a Lomb-Scargle periodogram period search followed by a full nonlinear Keplerian least-squares fit, recovering an injected orbit from realistically sampled, HARPS-noise-level synthetic data. See Section 8.</figcaption>
+    <figcaption>Output of <code>scripts/radial_velocity_demo.py</code>: the periodogram and cadence-specific noise threshold, phase-folded Keplerian fit, sampling window, and fixed-cadence amplitude-recovery experiment. The inputs are synthetic and the statistical scope is stated in Section 8.</figcaption>
   </div>
 
   <section id="pipeline">
-    <h2>8. How a real search finds a signal</h2>
-    <p>This repository implements the full RV analysis chain from scratch in Python:</p>
+    <h2>8. Reproducible injection–recovery experiment</h2>
+    <p>This repository implements a bounded teaching experiment in Python. It is not a production RV search pipeline:</p>
     <ol>
       <li>Injects a known Keplerian orbit (period, semi-amplitude K, eccentricity) sampled the way a real ground-based spectrograph campaign actually observes — irregular nightly cadence with seasonal observing-window gaps, not a smooth, evenly sampled curve.</li>
       <li>Adds noise combining HARPS's own published ~1 m/s single-measurement photon-noise precision with a ~1.5 m/s stellar jitter term added in quadrature — both realistic, published regimes, since stellar activity (spots, plages, granulation) imposes a noise floor no amount of instrumental precision alone can remove.</li>
-      <li>Recovers the orbital period from a Lomb-Scargle periodogram (<code>scipy.signal.lombscargle</code>), built specifically to handle irregularly sampled time series like real RV data.</li>
+      <li>Recovers the orbital period from a Lomb-Scargle periodogram (<code>scipy.signal.lombscargle</code>) and publishes the spectral window so cadence-driven aliases are visible.</li>
       <li>Refines period, K, eccentricity, and argument of periastron with a full nonlinear Keplerian least-squares fit (<code>scipy.optimize.curve_fit</code>), built on the from-scratch Kepler-equation solver and RV model derived in Sections 2-3.</li>
+      <li>Calibrates the maximum peak with 1,000 independent white-Gaussian noise realizations on the exact cadence. The plus-one estimate avoids reporting a zero Monte Carlo probability.</li>
+      <li>Repeats fixed-cadence injections at six amplitudes, with 100 trials each. A recovery must clear the 99th-percentile noise threshold and return a best period within 1% of the injection; Wilson 95% binomial intervals accompany every fraction.</li>
       <li>Converts the recovered K into a minimum mass M<sub>p</sub> sin i using the semi-amplitude equation and a fixed host star mass, and reports the error against the known injected truth.</li>
     </ol>
     <p>The result from this repo's own run, with HARPS-class noise and only 60 irregularly sampled nights:</p>
@@ -341,14 +349,25 @@ K = (2π·G / P)^(1/3) × Mp / (Mstar+Mp)^(2/3) / √(1−e²)
       <tr><td>K (semi-amplitude)</td><td>92.0 m/s</td><td>92.00 m/s</td><td>0.01%</td></tr>
       <tr><td>M<sub>p</sub> sin i</td><td>235.7 Earth masses</td><td>235.8 Earth masses</td><td>0.00%</td></tr>
     </table>
+    <p>The observed peak power is 0.9903; the 99th percentile of the 1,000 noise-only maximum peaks is 0.3165. Zero null maxima reached the observation, so the finite-resolution plus-one estimate is 1/1,001 (0.0999%). This result is conditional on the exact cadence, known 1.80 m/s independent-Gaussian noise scale, searched frequency grid, and null model—not a survey-wide false-alarm probability.</p>
+    <table>
+      <tr><th>Injected K</th><th>Recoveries</th><th>Fraction</th><th>Wilson 95% interval</th></tr>
+      <tr><td>1.5 m/s</td><td>35 / 100</td><td>35%</td><td>26.4–44.7%</td></tr>
+      <tr><td>3.0 m/s</td><td>100 / 100</td><td>100%</td><td>96.3–100%</td></tr>
+      <tr><td>5.0 m/s</td><td>100 / 100</td><td>100%</td><td>96.3–100%</td></tr>
+      <tr><td>10.0 m/s</td><td>100 / 100</td><td>100%</td><td>96.3–100%</td></tr>
+      <tr><td>20.0 m/s</td><td>100 / 100</td><td>100%</td><td>96.3–100%</td></tr>
+      <tr><td>92.0 m/s</td><td>100 / 100</td><td>100%</td><td>96.3–100%</td></tr>
+    </table>
+    <p class="muted">These fractions freeze the cadence, period, phase and eccentricity. They describe this experiment, not a general instrument completeness curve. Download the <a href="figures/amplitude_recovery.csv">amplitude-recovery table</a> and <a href="figures/summary_statistics.csv">fit and null-calibration summary</a>.</p>
     <p>Run it yourself: <code>pip install -r requirements.txt &amp;&amp; python scripts/radial_velocity_demo.py</code>. Tests live in <code>tests/test_radial_velocity.py</code>, including a regression guard that minimum mass scales as M<sub>★</sub><sup>2/3</sup> at fixed K — not the M<sub>★</sub><sup>1/2</sup> scaling it's easy to misremember — and run automatically on every push via GitHub Actions.</p>
   </section>
 
   <section id="limitations">
     <h2>9. Limitations and open problems</h2>
-    <p>The injected K (92 m/s) in this repo's demo sits at very high signal-to-noise against ~1.8 m/s combined noise, so it demonstrates that a strong Keplerian signal can be fitted cleanly — it is not a test of recovery near the noise floor, where real degeneracies between period, eccentricity, and sampling-window gaps become much harder to break. There is also no false-alarm-probability calculation on the periodogram peak in this demo, no fitted instrumental jitter term (jitter is added to the simulated data but not solved for in the fit), and no long-term trend or additional companion in the model — all standard components of a real RV analysis pipeline.</p>
+    <p>The amplitude grid includes one near-noise case, but it freezes cadence, phase, period and eccentricity and assumes independent Gaussian residuals with a known scale. It does not marginalize over weather-driven schedules or an orbital population. The local least-squares covariance is conditional on the fitted model and fixed error bars; it is not a posterior distribution. Jitter is injected but not inferred, and the model has no long-term trend, activity indicators, additional companion, correlated-noise process or multi-instrument zero-points.</p>
     <p>More fundamentally, stellar activity is the field's hardest open problem: starspots, plages, and granulation on the host star's own surface can imprint RV-like signals of 1-5 m/s or more that mimic or mask a genuine planetary orbit, and disentangling the two is an active area of research (activity indicators like the Ca II H&amp;K lines, and Gaussian-process regression against them, are common mitigations, neither implemented here). And per Section 4, RV alone never yields a true mass — only M<sub>p</sub> sin i — so any single-method RV "planet" carries an unresolved inclination ambiguity unless independently broken.</p>
-    <p class="callout">Real RV pipelines such as <code>radvel</code> and MCMC/nested-sampling-based fitters handle jitter fitting, false-alarm calibration, and multi-planet models properly, and are worth comparing your own fit against.</p>
+    <p class="callout">A defensible next experiment would randomize cadence and orbital geometry, infer jitter, inject correlated stellar activity, and compare competing models with posterior-predictive checks. Real RV pipelines such as <code>radvel</code> offer an external benchmark.</p>
   </section>
 
   <div class="related">

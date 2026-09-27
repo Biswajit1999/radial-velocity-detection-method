@@ -11,7 +11,7 @@
   <img src="images/hero.png" alt="Artist's concept of a star wobbling due to an orbiting planet" width="360">
 </p>
 
-<p align="center"><em>AI-generated artist's concept — not a real photograph. See the report for actual RV spectroscopy data.</em></p>
+<p align="center"><em>AI-generated artist's concept — not a real photograph. The quantitative figure below is generated from the explicitly declared synthetic injection.</em></p>
 
 The method that found the first exoplanet around a Sun-like star: watch
 a star's spectral lines shift back and forth as an orbiting planet's
@@ -118,9 +118,21 @@ floor that no amount of instrumental precision alone can remove.
    in the optimizer (not just inside the model function), so the fitted
    value used for the mass calculation can't come out unphysical even
    if the search briefly considers points outside the valid range.
-5. Converts the recovered K into a minimum mass $M_p \sin i$ using the
+5. Calibrates the largest periodogram peak against 1,000 independent
+   white-Gaussian noise realizations on the exact same observing cadence.
+   The reported plus-one Monte Carlo false-alarm estimate is conditional
+   on that cadence, known noise scale, frequency grid, and null model.
+6. Repeats the injection at six amplitudes from 1.5 to 92 m/s (100 trials
+   each), requiring both a peak above the cadence-specific 99th-percentile
+   null threshold and a best period within 1% of the injection. The output
+   includes Wilson 95% binomial intervals rather than only point estimates.
+7. Converts the recovered K into a minimum mass $M_p \sin i$ using the
    formula above and a fixed host star mass, and reports the error
    against the known injected values.
+
+The four-panel figure also publishes the spectral window, making the
+alias structure created by the irregular cadence visible instead of
+treating sampling as a hidden implementation detail.
 
 Run it yourself:
 
@@ -132,7 +144,9 @@ python scripts/radial_velocity_demo.py
 ## Tests
 
 `tests/test_radial_velocity.py` checks the Kepler solver residual, the
-circular-orbit limit, a mass/K round trip, and — as a regression guard
+deterministic seasonal cadence, period recovery in a high-signal limit,
+Wilson-interval boundaries, the circular-orbit limit, a mass/K round
+trip, and — as a regression guard
 — that minimum mass scales as Mstar^(2/3) at fixed K, not the
 Mstar^(1/2) scaling an earlier version of this README incorrectly
 stated. Runs automatically on every push via GitHub Actions; run
@@ -175,37 +189,53 @@ either one on a target where you don't already know the answer.
 | K (semi-amplitude) | 92.0 m/s | 92.00 m/s | 0.01% |
 | Mp sin i | 235.7 Earth masses | 235.8 Earth masses | 0.00% |
 
-With HARPS-class noise and only 60 irregularly sampled nights, the
-periodogram cleanly and unambiguously identifies the true period, and
-the phase-folded Keplerian fit recovers the orbit to well under 1%
-error on every parameter.
+The observed maximum periodogram power is 0.9903, compared with a
+0.3165 99th-percentile maximum-power threshold from 1,000 white-noise
+trials on the same cadence. None of those null trials reached the
+observed peak, giving a plus-one Monte Carlo estimate of 1/1,001
+(0.0999%). This is a finite-resolution, model-conditional diagnostic;
+it is not a survey-wide false-alarm probability or evidence that the
+same performance transfers to activity-dominated stellar data.
+
+| Injected K | Recovered trials | Recovery fraction | Wilson 95% interval |
+|---:|---:|---:|---:|
+| 1.5 m/s | 35 / 100 | 35% | 26.4–44.7% |
+| 3.0 m/s | 100 / 100 | 100% | 96.3–100% |
+| 5.0 m/s | 100 / 100 | 100% | 96.3–100% |
+| 10.0 m/s | 100 / 100 | 100% | 96.3–100% |
+| 20.0 m/s | 100 / 100 | 100% | 96.3–100% |
+| 92.0 m/s | 100 / 100 | 100% | 96.3–100% |
+
+Those fractions are conditional on one frozen 60-visit cadence, one
+period, phase and eccentricity, independent Gaussian noise with known
+1.80 m/s scale, the stated frequency grid, and the joint threshold-and-
+period criterion. They measure this experiment—not a general instrument
+completeness function. The machine-readable values are in
+[`figures/amplitude_recovery.csv`](figures/amplitude_recovery.csv).
 
 ## Limitations
 
-The injected K (92 m/s) sits at very high signal-to-noise against
-~1.8 m/s combined noise, so this is a demonstration that a strong
-Keplerian signal can be fitted cleanly — not a test of recovery near
-the noise floor, where real degeneracies between period, eccentricity,
-and sampling gaps become much harder to break. There's also no false-
-alarm-probability calculation on the periodogram peak, no fitted
-instrumental jitter term (jitter is added to the simulated data but
-not solved for in the fit), and no long-term trend or additional
-companion in the model — all standard components of a real RV
-analysis pipeline.
+The injection-recovery grid now probes one near-noise amplitude, but it
+still freezes cadence, orbital phase, period and eccentricity; it does
+not marginalize over the population of possible systems or weather-
+driven schedules. The noise-only calibration assumes independent
+Gaussian residuals and a known noise scale. It therefore omits the
+time-correlated stellar activity, wavelength-dependent systematics and
+model selection that dominate difficult real detections. The local
+least-squares covariance is conditional on the fitted model and fixed
+error bars; it is not a posterior distribution and should not be read
+as one. Jitter is injected but not inferred, and the model has no
+long-term trend, activity indicators, additional companion, or
+multi-instrument zero-points.
 
 ## Extending this
 
-To close some of that gap: rerun with K reduced toward the noise floor
-(a few m/s) and see how the periodogram and fit degrade; add a jitter
-parameter to the fit itself rather than only to the simulated data, and
-compare the fitted jitter to the true injected value; compute a
-bootstrap or analytic false-alarm probability for the periodogram peak
-instead of just taking the highest one; and try injecting a second,
-non-interacting planet to see how period aliasing and signal
-subtraction ("pre-whitening") work in a multi-planet system. Real RV
-pipelines such as `radvel` and `RadVel`'s underlying MCMC/nested-
-sampling fitters handle all of this and are worth comparing your own
-fit against.
+To close more of that gap: randomize phase, eccentricity and cadence;
+infer a jitter parameter rather than fixing the error model; use
+block/bootstrap or correlated-noise simulations; inject activity signals
+and a second planet; and compare competing models with posterior-
+predictive checks. Real RV pipelines such as `radvel`, together with
+MCMC or nested-sampling inference, provide useful external comparisons.
 
 ## Why this repo uses simulated (not raw archival) data
 
@@ -220,8 +250,8 @@ than blurring the two.
 ## Repository structure
 
 ```text
-scripts/radial_velocity_demo.py   Keplerian RV model + periodogram + fit + injection-recovery test
-figures/                          generated plot + summary_statistics.csv
+scripts/radial_velocity_demo.py   Keplerian model, periodogram, null calibration and recovery grid
+figures/                          generated four-panel plot + two machine-readable CSV files
 ```
 
 ## References
