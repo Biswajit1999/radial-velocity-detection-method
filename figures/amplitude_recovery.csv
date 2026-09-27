@@ -1,0 +1,7 @@
+K_ms,trials,recoveries,recovery_fraction,wilson95_low,wilson95_high,median_best_period_days,criterion
+1.5,100,35,0.35,0.26364248243097527,0.44745556703112027,4.233143986169425,max power >= cadence null 99th percentile and |Pbest/Pinj-1| <= 1%
+3.0,100,100,1.0,0.9630065017930143,1.0,4.230308158804034,max power >= cadence null 99th percentile and |Pbest/Pinj-1| <= 1%
+5.0,100,100,1.0,0.9630065017930143,1.0,4.230308158804034,max power >= cadence null 99th percentile and |Pbest/Pinj-1| <= 1%
+10.0,100,100,1.0,0.9630065017930143,1.0,4.230308158804034,max power >= cadence null 99th percentile and |Pbest/Pinj-1| <= 1%
+20.0,100,100,1.0,0.9630065017930143,1.0,4.230308158804034,max power >= cadence null 99th percentile and |Pbest/Pinj-1| <= 1%
+92.0,100,100,1.0,0.9630065017930143,1.0,4.230308158804034,max power >= cadence null 99th percentile and |Pbest/Pinj-1| <= 1%

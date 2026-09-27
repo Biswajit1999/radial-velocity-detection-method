@@ -15,6 +15,48 @@ def test_kepler_equation_residual_is_tiny():
         assert np.max(np.abs(residual)) < 1e-10, f"ecc={ecc}: max residual {np.max(np.abs(residual))}"
 
 
+def test_cadence_is_deterministic_and_preserves_seasonal_gaps():
+    first = rv.make_cadence(np.random.default_rng(7))
+    second = rv.make_cadence(np.random.default_rng(7))
+    assert len(first) == rv.N_OBS
+    assert np.array_equal(first, second)
+    assert np.all(np.diff(first) > 0)
+    assert np.all((first % 100) < 60)
+
+
+def test_periodogram_recovers_high_signal_period():
+    time = rv.make_cadence(np.random.default_rng(7))
+    signal = rv.keplerian_rv(
+        time,
+        rv.TRUE_PERIOD_DAYS,
+        rv.TRUE_T0_DAYS,
+        rv.TRUE_K_MS,
+        rv.TRUE_ECC,
+        rv.TRUE_OMEGA_RAD,
+        rv.GAMMA_MS,
+    )
+    _, peak, period = rv.periodogram(time, signal)
+    assert peak > 0.98
+    assert abs(period / rv.TRUE_PERIOD_DAYS - 1) < 0.001
+
+
+def test_phase_zero_uses_the_fitted_epoch():
+    period, t0 = 4.23, 3.5
+    phase_grid = np.linspace(0, 1, 10)
+    model_time = t0 + phase_grid * period
+    recovered_phase = ((model_time - t0) / period) % 1
+    assert np.allclose(recovered_phase[:-1], phase_grid[:-1])
+
+
+def test_wilson_interval_handles_boundary_counts():
+    low_zero, high_zero = rv.wilson_interval(0, 100)
+    low_full, high_full = rv.wilson_interval(100, 100)
+    assert abs(low_zero) < 1e-12
+    assert 0 < high_zero < 0.05
+    assert 0.95 < low_full < 1
+    assert abs(high_full - 1) < 1e-12
+
+
 def test_circular_orbit_reduces_to_sinusoid():
     # For e=0 and omega=0, true anomaly = mean anomaly, so the Keplerian
     # RV curve must reduce exactly to a plain cosine.

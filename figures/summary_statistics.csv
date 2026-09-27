@@ -1,6 +1,10 @@
 quantity,injected,recovered,error_pct
 period_days,4.23,4.2303 +/- 0.0002,0.01
-K_ms,92.0,92.00 +/- 0.34,0.01
+K_ms,92.0,92.00 +/- 0.33,0.01
 eccentricity,0.04,0.041,-
 Mp_sini_mearth,235.7,235.8,0.00
 n_observations,60,60,target vs. actual fitted sample size
+periodogram_peak_power,noise-only null,0.99031084,-
+null_99pct_max_power,1000 white-noise trials,0.31646344,-
+mc_false_alarm_exceedances,1000,0,-
+mc_fap_plus_one,cadence + known white noise,0.00099900,-
