@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "project": "Radial Velocity — Exoplanet Detection Method",
+  "tables": [
+    {
+      "path": "figures/summary_statistics.csv",
+      "label": "Summary statistics",
+      "role": "Tables and numerical results",
+      "rows": 9,
+      "width_mismatches": 0,
+      "columns": [
+        {
+          "name": "quantity",
+          "blank": 0,
+          "text": 9,
+          "finite": 0,
+          "nonfinite": 0
+        },
+        {
+          "name": "injected",
+          "blank": 0,
+          "text": 3,
+          "finite": 6,
+          "nonfinite": 0
+        },
+        {
+          "name": "recovered",
+          "blank": 0,
+          "text": 2,
+          "finite": 7,
+          "nonfinite": 0
+        },
+        {
+          "name": "error_pct",
+          "blank": 0,
+          "text": 6,
+          "finite": 3,
+          "nonfinite": 0
+        }
+      ]
+    },
+    {
+      "path": "figures/amplitude_recovery.csv",
+      "label": "Amplitude recovery",
+      "role": "Tables and numerical results",
+      "rows": 6,
+      "width_mismatches": 0,
+      "columns": [
+        {
+          "name": "K_ms",
+          "blank": 0,
+          "text": 0,
+          "finite": 6,
+          "nonfinite": 0,
+          "minimum": 1.5,
+          "maximum": 92.0
+        },
+        {
+          "name": "trials",
+          "blank": 0,
+          "text": 0,
+          "finite": 6,
+          "nonfinite": 0,
+          "minimum": 100.0,
+          "maximum": 100.0
+        },
+        {
+          "name": "recoveries",
+          "blank": 0,
+          "text": 0,
+          "finite": 6,
+          "nonfinite": 0,
+          "minimum": 35.0,
+          "maximum": 100.0
+        },
+        {
+          "name": "recovery_fraction",
+          "blank": 0,
+          "text": 0,
+          "finite": 6,
+          "nonfinite": 0,
+          "minimum": 0.35,
+          "maximum": 1.0
+        },
+        {
+          "name": "wilson95_low",
+          "blank": 0,
+          "text": 0,
+          "finite": 6,
+          "nonfinite": 0,
+          "minimum": 0.26364248243097527,
+          "maximum": 0.9630065017930143
+        },
+        {
+          "name": "wilson95_high",
+          "blank": 0,
+          "text": 0,
+          "finite": 6,
+          "nonfinite": 0,
+          "minimum": 0.44745556703112027,
+          "maximum": 1.0
+        },
+        {
+          "name": "median_best_period_days",
+          "blank": 0,
+          "text": 0,
+          "finite": 6,
+          "nonfinite": 0,
+          "minimum": 4.230308158804034,
+          "maximum": 4.233143986169425
+        },
+        {
+          "name": "criterion",
+          "blank": 0,
+          "text": 6,
+          "finite": 0,
+          "nonfinite": 0
+        }
+      ]
+    }
+  ],
+  "excluded": []
+}
