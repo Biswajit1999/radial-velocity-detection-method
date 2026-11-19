@@ -25,6 +25,12 @@ pipeline by injecting a known signal and recovering it.
 
 Related, from the same author: [Jana's RV Doppler Observatory](https://biswajit1999.github.io/Jana-s-RV-Doppler-Observatory/), an earlier radial-velocity lab covering related Doppler-spectroscopy analysis.
 
+## Research evidence and downloads
+
+[Open the evidence browser](https://biswajit1999.github.io/radial-velocity-detection-method/evidence.html) for 3 selected files, including [`summary_statistics.csv`](figures/summary_statistics.csv). Each file has a download link and SHA-256 digest.
+
+Rebuild the inventory and browser with `python scripts/evidence_catalog.py` and `python scripts/render_evidence_page.py`.
+
 ## The physics
 
 ### Two bodies orbiting their common center of mass
