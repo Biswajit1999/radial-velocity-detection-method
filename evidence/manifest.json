@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "project": "Radial Velocity — Exoplanet Detection Method",
+  "repository": "https://github.com/Biswajit1999/radial-velocity-detection-method",
+  "files": [
+    {
+      "label": "Summary statistics",
+      "path": "figures/summary_statistics.csv",
+      "role": "Tables and numerical results",
+      "bytes": 427,
+      "sha256": "98b96d6f3ee2bf54b62b7409bf1464833cb7d44a3429df9bf6a14e6bae32af33",
+      "hash_basis": "LF-normalised text",
+      "format": "CSV",
+      "rows": 9,
+      "columns": 4,
+      "headers": [
+        "quantity",
+        "injected",
+        "recovered",
+        "error_pct"
+      ],
+      "preview": [
+        [
+          "period_days",
+          "4.23",
+          "4.2303 +/- 0.0002",
+          "0.01"
+        ],
+        [
+          "K_ms",
+          "92.0",
+          "92.00 +/- 0.33",
+          "0.01"
+        ],
+        [
+          "eccentricity",
+          "0.04",
+          "0.041",
+          "-"
+        ],
+        [
+          "Mp_sini_mearth",
+          "235.7",
+          "235.8",
+          "0.00"
+        ]
+      ]
+    },
+    {
+      "label": "Amplitude recovery",
+      "path": "figures/amplitude_recovery.csv",
+      "role": "Tables and numerical results",
+      "bytes": 866,
+      "sha256": "239edb36ccdba1d3f912a69e2ebdee107a6b6ad19fd55617461042310119c184",
+      "hash_basis": "LF-normalised text",
+      "format": "CSV",
+      "rows": 6,
+      "columns": 8,
+      "headers": [
+        "K_ms",
+        "trials",
+        "recoveries",
+        "recovery_fraction",
+        "wilson95_low",
+        "wilson95_high",
+        "median_best_period_days"
+      ],
+      "preview": [
+        [
+          "1.5",
+          "100",
+          "35",
+          "0.35",
+          "0.26364248243097527",
+          "0.44745556703112027",
+          "4.233143986169425"
+        ],
+        [
+          "3.0",
+          "100",
+          "100",
+          "1.0",
+          "0.9630065017930143",
+          "1.0",
+          "4.230308158804034"
+        ],
+        [
+          "5.0",
+          "100",
+          "100",
+          "1.0",
+          "0.9630065017930143",
+          "1.0",
+          "4.230308158804034"
+        ],
+        [
+          "10.0",
+          "100",
+          "100",
+          "1.0",
+          "0.9630065017930143",
+          "1.0",
+          "4.230308158804034"
+        ]
+      ]
+    },
+    {
+      "label": "Radial velocity recovery",
+      "path": "figures/radial_velocity_recovery.png",
+      "role": "Figures",
+      "bytes": 297925,
+      "sha256": "77913b50d6c59f184526370a7911f17196cd89788871035505fa9f68fcf55c10",
+      "hash_basis": "exact bytes",
+      "format": "PNG"
+    }
+  ]
+}

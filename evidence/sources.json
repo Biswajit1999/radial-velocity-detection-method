@@ -1,0 +1,21 @@
+{
+  "project": "Radial Velocity — Exoplanet Detection Method",
+  "repository": "https://github.com/Biswajit1999/radial-velocity-detection-method",
+  "files": [
+    {
+      "label": "Summary statistics",
+      "path": "figures/summary_statistics.csv",
+      "role": "Tables and numerical results"
+    },
+    {
+      "label": "Amplitude recovery",
+      "path": "figures/amplitude_recovery.csv",
+      "role": "Tables and numerical results"
+    },
+    {
+      "label": "Radial velocity recovery",
+      "path": "figures/radial_velocity_recovery.png",
+      "role": "Figures"
+    }
+  ]
+}
